@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -18,9 +18,16 @@ export class UsersService {
 
   async create(payload: CreateUserPayload): Promise<User> {
     const user = new User();
-    user.password = payload.password;
-    user.username = hashPassword(payload.password);
+    user.username = payload.username;
+    user.password = hashPassword(payload.password);
     this.userRepository.save(user);
+    return user;
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ username });
+    if (!user) throw new UnauthorizedException('Wrong username/password');
+
     return user;
   }
 }
