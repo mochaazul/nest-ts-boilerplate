@@ -2,6 +2,8 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInPayload, SignInResponse } from './auth.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ResponseDto } from 'common/dto/response.dto';
+import { DefResponse } from 'common/decorator/response.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -10,7 +12,10 @@ export class AuthController {
 
   @ApiOperation({ operationId: 'login' })
   @Post('login')
-  async signIn(@Body() payload: SignInPayload): Promise<SignInResponse> {
+  @DefResponse(SignInResponse)
+  async signIn(
+    @Body() payload: SignInPayload,
+  ): Promise<ResponseDto<SignInResponse>> {
     return this.service.signIn(payload.username, payload.password);
   }
 }
