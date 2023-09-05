@@ -1,9 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Injectable,
+  UnauthorizedException,
+  UseInterceptors,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserPayload } from './user.dto';
-import { hashPassword } from 'extras/helper/hash';
+import { hashPassword } from 'common/helper/hash';
+import E_MSG from 'common/constant/ErrorMsg';
+import { PageOptionsDto } from 'common/dto/page-option.dto';
+import { PageDto } from 'common/dto/page.dto';
+import { PageMetaDto } from 'common/dto/page-meta.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +21,15 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  findAll(): Promise<User[] | null> {
-    return this.userRepository.find();
+  @UseInterceptors(ClassSerializerInterceptor)
+  async findAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<User>> {
+    const user = await this.userRepository.find({
+      skip: pageOptionsDto.skip,
+      take: pageOptionsDto.take,
+    });
+    const itemCount = user.length;
+    const pageMeta = new PageMetaDto({ itemCount, pageOptionsDto });
+    return new PageDto(user, pageMeta);
   }
 
   async create(payload: CreateUserPayload): Promise<User> {
@@ -26,7 +42,7 @@ export class UsersService {
 
   async findByUsername(username: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ username });
-    if (!user) throw new UnauthorizedException('Wrong username/password');
+    if (!user) throw new UnauthorizedException(E_MSG.WrongUsernamePassword);
 
     return user;
   }
