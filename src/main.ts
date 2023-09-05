@@ -1,6 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -14,7 +18,11 @@ async function bootstrap() {
     .setVersion(process.env.SWAG_DOCS_VERSION ?? '')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const swaggerOptions: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+  };
+  const document = SwaggerModule.createDocument(app, config, swaggerOptions);
+
   SwaggerModule.setup('api', app, document);
 
   await app.listen(3000);

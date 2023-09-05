@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import {
   Column,
@@ -13,6 +14,7 @@ export class User {
   id: number;
 
   @Column()
+  @ApiProperty()
   username: string;
 
   @Column()

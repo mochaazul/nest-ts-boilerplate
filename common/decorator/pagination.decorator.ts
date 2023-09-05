@@ -8,7 +8,6 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
   return applyDecorators(
     ApiExtraModels(PageDto),
     ApiOkResponse({
-      description: 'Successfully received model list',
       schema: {
         allOf: [
           { $ref: getSchemaPath(PageDto) },
@@ -17,6 +16,7 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(
               data: {
                 type: 'array',
                 items: { $ref: getSchemaPath(model) },
+                $ref: getSchemaPath(model),
               },
             },
           },
