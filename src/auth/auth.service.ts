@@ -1,6 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compareHash } from 'src/helper/hash';
+import { compareHash } from 'extras/helper/hash';
 import { UsersService } from 'src/users/users.service';
 import { SignInResponse } from './auth.dto';
 
