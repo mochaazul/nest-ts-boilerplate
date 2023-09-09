@@ -16,6 +16,7 @@ async function bootstrap() {
     .setTitle(process.env.SWAG_TITLE ?? '')
     .setDescription(process.env.SWAG_DESC ?? '')
     .setVersion(process.env.SWAG_DOCS_VERSION ?? '')
+    .addBearerAuth()
     .build();
 
   const swaggerOptions: SwaggerDocumentOptions = {

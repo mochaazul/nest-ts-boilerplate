@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -15,6 +16,8 @@ import { PageOptionsDto } from 'common/dto/page-option.dto';
 import { ApiPaginatedResponse } from 'common/decorator/pagination.decorator';
 import { ResponseDto } from 'common/dto/response.dto';
 import { DefResponse } from 'common/decorator/response.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -23,6 +26,10 @@ export class UsersController {
   @Get()
   @ApiPaginatedResponse(User)
   @UseInterceptors(ClassSerializerInterceptor) // TO CLEANUP RESPONSE BASED ON @EXCLUDE DECORATOR ON ENTITY
+  // @SetMetadata('permissions', ['read:users'])
+  @UseGuards(AuthGuard)
+  // @ApiSecurity('api_key')
+  @ApiBearerAuth()
   getUsers(@Query() pageOptions: PageOptionsDto): Promise<PageDto<User>> {
     return this.service.findAll(pageOptions);
   }
